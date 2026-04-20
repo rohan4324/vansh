@@ -9,7 +9,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['favicon.ico'],
+      includeAssets: ['favicon.ico', 'favicon-32x32.png', 'apple-touch-icon.png', 'icons/*.png'],
       manifest: {
         name: 'Vansh - Family Tree',
         short_name: 'Vansh',
@@ -18,8 +18,9 @@ export default defineConfig({
         background_color: '#FAFAF5',
         display: 'standalone',
         icons: [
-          { src: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-maskable-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {
