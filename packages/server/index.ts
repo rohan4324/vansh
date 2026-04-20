@@ -4,6 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { logger } from './src/shared/logger';
 import { runMigrations } from './src/shared/migrate';
+import { runSeed } from './src/shared/seed';
 import { errorHandler } from './src/middleware/error.middleware';
 import { defaultNoCache } from './src/middleware/cache.middleware';
 import { sanitizeBody } from './src/middleware/sanitize.middleware';
@@ -68,6 +69,12 @@ try {
 } catch (err) {
   logger.error({ err }, 'Database migration failed');
   process.exit(1);
+}
+
+try {
+  await runSeed();
+} catch (err) {
+  logger.error({ err }, 'Database seed failed');
 }
 
 app.listen(PORT, () => {
