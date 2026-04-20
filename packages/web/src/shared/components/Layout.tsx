@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { TreePine, User, LogOut, Search, Menu, X, Shield, HelpCircle } from 'lucide-react';
+import { TreePine, User, LogOut, Search, Menu, X, Shield, HelpCircle, Download } from 'lucide-react';
 
 import { NotificationBell } from './NotificationBell';
 import { useState, useEffect, useRef } from 'react';
@@ -7,6 +7,8 @@ import { useAuth } from '@/shared/contexts/AuthContext';
 import { useMyTree } from '@/shared/hooks/useMyTree';
 import { MobileBottomNav } from './MobileBottomNav';
 import { InstallPrompt } from './InstallPrompt';
+import { InstallInstructionsDialog } from './InstallInstructionsDialog';
+import { useInstallPrompt } from '@/shared/hooks/useInstallPrompt';
 import { cn } from '@/lib/utils';
 
 export function Layout() {
@@ -15,8 +17,20 @@ export function Layout() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [installDialogOpen, setInstallDialogOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const { myTreePath } = useMyTree();
+  const { canInstall, canPromptNatively, isInstalled, instructions, promptInstall } = useInstallPrompt();
+
+  const handleInstallClick = async () => {
+    setProfileOpen(false);
+    if (canPromptNatively) {
+      const outcome = await promptInstall();
+      if (outcome === 'unavailable') setInstallDialogOpen(true);
+    } else {
+      setInstallDialogOpen(true);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -199,6 +213,15 @@ export function Layout() {
                     <HelpCircle className="h-4 w-4" />
                     Help
                   </button>
+                  {!isInstalled && canInstall && (
+                    <button
+                      onClick={handleInstallClick}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-secondary"
+                    >
+                      <Download className="h-4 w-4" />
+                      Install App
+                    </button>
+                  )}
                   <button
                     onClick={() => { setProfileOpen(false); handleLogout(); }}
                     className="flex w-full items-center gap-2 px-3 py-2 text-sm text-destructive hover:bg-secondary"
@@ -222,6 +245,11 @@ export function Layout() {
 
         {/* PWA Install Prompt */}
         <InstallPrompt />
+        <InstallInstructionsDialog
+          open={installDialogOpen}
+          instructions={instructions}
+          onClose={() => setInstallDialogOpen(false)}
+        />
       </div>
     </div>
   );
