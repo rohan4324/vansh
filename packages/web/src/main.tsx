@@ -8,3 +8,7 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>
 );
+
+requestAnimationFrame(() => {
+  (window as unknown as { __hideVanshSplash?: () => void }).__hideVanshSplash?.();
+});
